@@ -9,5 +9,4 @@ ENV REGISTRY_AUTH="htpasswd"
 ADD start.sh /start.sh
 RUN chmod +x /start.sh
 EXPOSE 80
-EXPOSE 5000
 ENTRYPOINT ["/start.sh"]
