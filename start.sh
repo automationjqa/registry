@@ -11,12 +11,12 @@ function cert_update() {
 	echo -e "Checking certificate..."
 	if [[ ! -f "/etc/letsencrypt/live/$(hostname)/fullchain.pem" ]];then
 		echo -e "Cert is absent. Getting new certificate..."
-		certbot certonly -n --standalone -d "$HOSTNAME" --agree-tos -m "admin@$HOSTNAME" >"$CERT_LOG_FILE" 2>"$CERT_LOG_FILE"
+		certbot certonly -n --standalone -d "$HOSTNAME" --agree-tos -m "admin@$HOSTNAME" >>"$CERT_LOG_FILE" 2>>"$CERT_LOG_FILE"
 		echo -e "Adding crontab job to renew certificates..."
 		echo -e "0 0-10 1,5,10,15,20,25 * * /start.sh" >> /etc/crontabs/root
 	else
 		echo -e "Cert exists. Trying to renew..."
-		certbot renew -n --post-hook "kill -9 $(ps aux | grep 'registry serve /etc/docker/registry/config.yml' | grep -v grep | awk '{print $1}'); registry serve /etc/docker/registry/config.yml 2>/var/log/run.log >/var/log/run.log &" >"$CERT_LOG_FILE" 2>"$CERT_LOG_FILE"
+		certbot renew -n --post-hook "kill -9 $(ps aux | grep 'registry serve /etc/docker/registry/config.yml' | grep -v grep | awk '{print $1}'); registry serve /etc/docker/registry/config.yml 2>>/var/log/run.log >>/var/log/run.log &" >>"$CERT_LOG_FILE" 2>>"$CERT_LOG_FILE"
 	fi
 	deactivate
 }
