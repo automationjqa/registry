@@ -1,0 +1,35 @@
+type: install
+name: Docker registry
+
+categories:
+- apps/dev-and-admin-tools
+
+description:
+  text: Your own private docker registry secured by LetsEncrypt and password authentication.
+  short: Your own private docker registry.
+
+settings:
+  fields:
+    - type: radio-fieldset
+      name: installationScenario
+      default: publicIP
+      values:
+        publicIP: Public IP.
+        endpoint: Endpoint.
+
+onInstall:
+  - if (${settings.installationScenario} == "endpoint"):
+        env.control.addendpoint [${nodes.docker[0].id}]:
+            privatePort: 5000
+            protocol: TCP
+            name: registry
+
+nodes:
+  - nodeType: docker
+    image: dkay/registry:latest
+    cloudlets: 10
+    extip:
+      if (${settings.installationScenario.publicIP} == "publicIP"):
+        return: true
+
+success: success.md
