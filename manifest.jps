@@ -11,14 +11,14 @@ description:
 settings:
   fields:
     - type: radio-fieldset
-      name: installationScenario
-      default: publicIP
+      name: isPublicIPEnabled
+      default: true
       values:
-        publicIP: Public IP.
-        endpoint: Endpoint.
+        true: Public IP.
+        false: Endpoint.
 
 onInstall:
-  - if (${settings.installationScenario} == "endpoint"):
+  - if ("${settings.isPublicIPEnabled}" == "false"):
         env.control.addendpoint [${nodes.docker[0].id}]:
             privatePort: 5000
             protocol: TCP
@@ -28,8 +28,6 @@ nodes:
   - nodeType: docker
     image: dkay/registry:latest
     cloudlets: 10
-    extip:
-      if (${settings.installationScenario.publicIP} == "publicIP"):
-        return: true
+    extip: ${settings.isPublicIPEnabled}
 
 success: success.md
