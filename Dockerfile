@@ -6,7 +6,8 @@ ENV REGISTRY_AUTH_HTPASSWD_PATH="/auth/htpasswd"
 ENV REGISTRY_AUTH_HTPASSWD_REALM="Registry Realm"
 ENV REGISTRY_AUTH="htpasswd"
 
-ADD start.sh /start.sh
-RUN chmod +x /start.sh
+ADD entrypoint.sh /entrypoint.sh
+
 EXPOSE 80
-ENTRYPOINT ["/start.sh"]
+
+ENTRYPOINT ["/entrypoint.sh"]
