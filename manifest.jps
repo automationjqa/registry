@@ -1,6 +1,7 @@
 type: install
-name: Docker registry
-
+name: Docker Registry
+baseUrl: https://raw.githubusercontent.com/mrAlexZT/registry/master/
+logo: https://www.docker.com/sites/default/files/d8/2019-07/horizontal-logo-monochromatic-white.png
 categories:
 - apps/dev-and-admin-tools
 
@@ -8,8 +9,19 @@ description:
   text: Your own private docker registry secured by LetsEncrypt and password authentication.
   short: Your own private docker registry.
 
+globals:
+  startPage: http://${env.domain}/
+
 settings:
   fields:
+    - type: list
+      name: CertTypeToInstall
+      caption: Certificate To Install
+      values:
+        install_cert_le: Let's Encrypt Certificate
+        install_cert_ss: Self Signed Certificate
+      default: install_cert_le
+      required: true
     - type: radio-fieldset
       name: isPublicIPEnabled
       default: true
@@ -17,17 +29,33 @@ settings:
         true: Public IP.
         false: Endpoint.
 
+nodes:
+  - nodeType: docker
+    image: jelos/registry:latest
+    cloudlets: 10
+    extip: ${settings.isPublicIPEnabled}
+
 onInstall:
   - if ("${settings.isPublicIPEnabled}" == "false"):
         env.control.addendpoint [${nodes.docker[0].id}]:
-            privatePort: 5000
-            protocol: TCP
-            name: registry
+          privatePort: 5000
+          protocol: TCP
+          name: registry
+        setGlobals:
+          startPage: http://${env.domain}:5000/
+  - if ('${settings.CertTypeToInstall}' == 'install_cert_le'): install_cert_le
+  - if ('${settings.CertTypeToInstall}' == 'install_cert_ss'): install_cert_ss
 
-nodes:
-  - nodeType: docker
-    image: dkay/registry:latest
-    cloudlets: 10
-    extip: ${settings.isPublicIPEnabled}
+actions:
+  install_cert_le:
+    - log: Install ${settings.CertTypeToInstall}
+    - cmd [*]: echo install_cert_le > /home/CertTypeToInstall
+
+  install_cert_ss:
+    - log: Install ${settings.CertTypeToInstall}
+    - cmd [*]: echo install_cert_ss > /home/CertTypeToInstall
+
+
+startPage: ${globals.startPage}
 
 success: success.md
