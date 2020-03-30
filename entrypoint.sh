@@ -1,3 +1,4 @@
 #!/bin/sh
 
-echo "$@"
+tail -f /dev/null
+
