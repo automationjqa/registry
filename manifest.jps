@@ -10,7 +10,8 @@ description:
   short: Your own private docker registry.
 
 globals:
-  startPage: http://${env.domain}/
+  registryURL: ${env.domain}
+  registryPort: "5000"
 
 settings:
   fields:
@@ -20,11 +21,11 @@ settings:
       values:
         install_cert_le: Let's Encrypt Certificate
         install_cert_ss: Self Signed Certificate
-      default: install_cert_le
+      default: install_cert_ss
       required: true
     - type: radio-fieldset
       name: isPublicIPEnabled
-      default: true
+      default: "false"
       values:
         true: Public IP.
         false: Endpoint.
@@ -36,17 +37,20 @@ nodes:
     extip: ${settings.isPublicIPEnabled}
 
 onInstall:
-  - if ("${settings.isPublicIPEnabled}" == "false"):
-        env.control.addendpoint [${nodes.docker[0].id}]:
-          privatePort: 5000
-          protocol: TCP
-          name: registry
-        setGlobals:
-          startPage: http://${env.domain}:5000/
+  - if ("${settings.isPublicIPEnabled}" == "false"): addendpoint        
   - if ('${settings.CertTypeToInstall}' == 'install_cert_le'): install_cert_le
   - if ('${settings.CertTypeToInstall}' == 'install_cert_ss'): install_cert_ss
 
 actions:
+  addendpoint:
+    - env.control.addendpoint [${nodes.docker[0].id}]:
+      privatePort: 5000
+      protocol: TCP
+      name: Registry Shared Port
+    - log: publicPort = ${response.object.publicPort}
+    - setGlobals:
+        registryPort: ${response.object.publicPort}
+
   install_cert_le:
     - log: Install ${settings.CertTypeToInstall}
     - cmd [*]: echo install_cert_le > /home/CertTypeToInstall
@@ -54,8 +58,5 @@ actions:
   install_cert_ss:
     - log: Install ${settings.CertTypeToInstall}
     - cmd [*]: echo install_cert_ss > /home/CertTypeToInstall
-
-
-startPage: ${globals.startPage}
 
 success: success.md
