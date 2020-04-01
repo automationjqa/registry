@@ -1,6 +1,6 @@
 ##### Access to your registry:
 
-##### Installation:
+##### Login to a registry:
 ```docker login ${globals.registryURL}:${globals.registryPort}```
   
 ##### Credentials are stored in the registry container:
