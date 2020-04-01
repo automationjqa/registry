@@ -1,5 +1,3 @@
-##### Access to your registry:
-
 ##### Login to a registry:
 ```docker login ${globals.registryURL}:${globals.registryPort}```
   
