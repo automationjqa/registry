@@ -82,11 +82,7 @@ actions:
     - cmd [cp]: |-
         /usr/bin/echo install_cert_le > /home/CertTypeToInstall
         /usr/bin/certbot certonly --standalone ${globals.LetsEncryptTestParams} --domain ${globals.registryURL} --preferred-challenges http-01 --http-01-port 80 --renew-by-default --email ${user.email} --agree-tos --no-bootstrap --no-self-upgrade --no-eff-email --logs-dir /var/log/letsencrypt
-        export REGISTRY_HTTP_TLS_CERTIFICATE="/etc/letsencrypt/live/${globals.registryURL}/fullchain.pem"
-        export REGISTRY_HTTP_TLS_KEY="/etc/letsencrypt/live/${globals.registryURL}/privkey.pem"
-    #- env:
-    #  REGISTRY_HTTP_TLS_CERTIFICATE: /etc/letsencrypt/live/${globals.registryURL}/fullchain.pem
-    #  REGISTRY_HTTP_TLS_KEY: /etc/letsencrypt/live/${globals.registryURL}/privkey.pem    
+        cp /etc/letsencrypt/live/${globals.registryURL}/*.pem /home/
 
   install_cert_ss:
     - log: Install ${settings.CertTypeToInstall}
@@ -96,10 +92,5 @@ actions:
         -out /home/fullchain.pem \
         -keyout /home/privkey.pem \
         -subj "/C=UA/ST=Zhytomyr/L=ZT/O=Jelastic/OU=Quality Assurance Department/emailAddress=${user.email}/CN=${globals.registryURL}"
-        export REGISTRY_HTTP_TLS_CERTIFICATE="/home/fullchain.pem"
-        export REGISTRY_HTTP_TLS_KEY="/home/privkey.pem"
-    #- env:
-    #  REGISTRY_HTTP_TLS_CERTIFICATE: /home/fullchain.pem
-    #  REGISTRY_HTTP_TLS_KEY: /home/privkey.pem
 
 success: success.md
