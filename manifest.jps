@@ -11,7 +11,11 @@ description:
 
 globals:
   registryURL: ${env.domain}
-  registryPort: "5000"
+  registryPort: 5000
+  registryUser: jelastic
+  registryPassword: ${fn.password}
+  #LetsEncryptTestParams: "--test-cert --break-my-certs "
+  LetsEncryptTestParams: ""
 
 settings:
   fields:
@@ -31,17 +35,39 @@ settings:
         false: Endpoint.
 
 nodes:
-  - nodeType: docker
-    image: jelos/registry:latest
+  - nodeGroup: cp
+    image: jelos/registry:centos7
     cloudlets: 10
     extip: ${settings.isPublicIPEnabled}
+    env:
+      ENV REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+      ENV REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+      ENV REGISTRY_AUTH: htpasswd
+      REGISTRY_HTTP_SECRET: ${globals.registryPassword}
+      #################################################
+      REGISTRY_HTTP_TLS_CERTIFICATE: /home/fullchain.pem
+      REGISTRY_HTTP_TLS_KEY: /home/privkey.pem
+      #################################################
 
 onInstall:
+  - prepare_registry
   - if ("${settings.isPublicIPEnabled}" == "false"): addendpoint        
   - if ('${settings.CertTypeToInstall}' == 'install_cert_le'): install_cert_le
   - if ('${settings.CertTypeToInstall}' == 'install_cert_ss'): install_cert_ss
+  - start_registry
 
 actions:
+  prepare_registry:
+    - cmd [cp]: |-
+        [[ ! -d "/auth" ]] && mkdir /auth
+        /usr/bin/htpasswd -Bbn "${globals.registryUser}" "${globals.registryPassword}" > /auth/htpasswd
+        /usr/bin/echo -e "LOGIN=${globals.registryUser}\nPASSWORD=${globals.registryPassword}" >> /home/registry_auth
+
+  start_registry:
+    #- cmd [cp]: |-
+        #/usr/bin/registry serve /etc/docker-distribution/registry/config.yml
+    - log: ADD START REGISTRY
+
   addendpoint:
     - env.control.addendpoint [${nodes.docker[0].id}]:
       privatePort: 5000
@@ -53,10 +79,27 @@ actions:
 
   install_cert_le:
     - log: Install ${settings.CertTypeToInstall}
-    - cmd [*]: echo install_cert_le > /home/CertTypeToInstall
+    - cmd [cp]: |-
+        /usr/bin/echo install_cert_le > /home/CertTypeToInstall
+        /usr/bin/certbot --standalone ${globals.LetsEncryptTestParams} --domain ${globals.registryURL} --preferred-challenges http-01 --http-01-port 80 --renew-by-default --email ${user.email} --agree-tos --no-bootstrap --no-self-upgrade --no-eff-email --logs-dir /var/log/letsencrypt
+        export REGISTRY_HTTP_TLS_CERTIFICATE="/etc/letsencrypt/live/${globals.registryURL}/fullchain.pem"
+        export REGISTRY_HTTP_TLS_KEY="/etc/letsencrypt/live/${globals.registryURL}/privkey.pem"
+    #- env:
+    #  REGISTRY_HTTP_TLS_CERTIFICATE: /etc/letsencrypt/live/${globals.registryURL}/fullchain.pem
+    #  REGISTRY_HTTP_TLS_KEY: /etc/letsencrypt/live/${globals.registryURL}/privkey.pem    
 
   install_cert_ss:
     - log: Install ${settings.CertTypeToInstall}
-    - cmd [*]: echo install_cert_ss > /home/CertTypeToInstall
+    - cmd [cp]: |-
+        /usr/bin/echo install_cert_ss > /home/CertTypeToInstall
+        /usr/bin/openssl req -new -x509 -days 3065 -nodes \
+        -out /home/fullchain.pem \
+        -keyout /home/privkey.pem \
+        -subj "/C=UA/ST=Zhytomyr/L=ZT/O=Jelastic/OU=Quality Assurance Department/emailAddress=${user.email}/CN=${globals.registryURL}"
+        export REGISTRY_HTTP_TLS_CERTIFICATE="/home/fullchain.pem"
+        export REGISTRY_HTTP_TLS_KEY="/home/privkey.pem"
+    #- env:
+    #  REGISTRY_HTTP_TLS_CERTIFICATE: /home/fullchain.pem
+    #  REGISTRY_HTTP_TLS_KEY: /home/privkey.pem
 
 success: success.md
