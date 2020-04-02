@@ -1,6 +1,6 @@
 ##### Login to a registry:
 ~~~~
-docker login ${globals.registryURL}:${globals.registryPort}
+docker login ${globals.registryURL}:${globals.registryPort} -u jelastic -p ${globals.registryPassword}
 ~~~~
   
 ##### Credentials are stored in the registry container:
