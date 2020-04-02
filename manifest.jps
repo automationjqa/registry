@@ -14,7 +14,6 @@ globals:
   registryPort: 5000
   registryUser: jelastic
   registryPassword: ${fn.password}
-  #LetsEncryptTestParams: "--test-cert --break-my-certs "
   LetsEncryptTestParams: ""
 
 settings:
@@ -27,6 +26,15 @@ settings:
         install_cert_ss: Self Signed Certificate
       default: install_cert_ss
       required: true
+      showIf:
+        install_cert_le:
+          - type: list
+            name: install_cert_le_production
+            caption: Let's Encrypt Type
+            default: "true"
+            values:
+              true: Let's Encrypt Authority X3
+              false: Fake LE Intermediate X1
     - type: radio-fieldset
       name: isPublicIPEnabled
       default: "false"
@@ -79,6 +87,9 @@ actions:
 
   install_cert_le:
     - log: Install ${settings.CertTypeToInstall}
+    - if ("${settings.install_cert_le_production}" == "false"):
+      - setGlobals:
+          LetsEncryptTestParams: "--test-cert --break-my-certs "
     - cmd [cp]: |-
         /usr/bin/echo install_cert_le > /home/CertTypeToInstall
         /usr/bin/certbot certonly --standalone ${globals.LetsEncryptTestParams} --domain ${globals.registryURL} --preferred-challenges http-01 --http-01-port 80 --renew-by-default --email ${user.email} --agree-tos --no-bootstrap --no-self-upgrade --no-eff-email --logs-dir /var/log/letsencrypt
