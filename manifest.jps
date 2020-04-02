@@ -81,7 +81,7 @@ actions:
     - log: Install ${settings.CertTypeToInstall}
     - cmd [cp]: |-
         /usr/bin/echo install_cert_le > /home/CertTypeToInstall
-        /usr/bin/certbot --standalone ${globals.LetsEncryptTestParams} --domain ${globals.registryURL} --preferred-challenges http-01 --http-01-port 80 --renew-by-default --email ${user.email} --agree-tos --no-bootstrap --no-self-upgrade --no-eff-email --logs-dir /var/log/letsencrypt
+        /usr/bin/certbot certonly --standalone ${globals.LetsEncryptTestParams} --domain ${globals.registryURL} --preferred-challenges http-01 --http-01-port 80 --renew-by-default --email ${user.email} --agree-tos --no-bootstrap --no-self-upgrade --no-eff-email --logs-dir /var/log/letsencrypt
         export REGISTRY_HTTP_TLS_CERTIFICATE="/etc/letsencrypt/live/${globals.registryURL}/fullchain.pem"
         export REGISTRY_HTTP_TLS_KEY="/etc/letsencrypt/live/${globals.registryURL}/privkey.pem"
     #- env:
