@@ -88,6 +88,7 @@ actions:
   start_registry:
     - cmd [cp]: |-
         echo "@reboot root /bin/bash /entrypoint.sh" > /etc/cron.d/registry
+        echo "@reboot root /bin/bash /letsencryptrenewal.sh" > /etc/cron.d/letsencrypt
     - restartNodes:
         nodeGroup: [cp]
         reboot: true
