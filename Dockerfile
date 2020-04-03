@@ -10,7 +10,7 @@ ADD entrypoint.sh /entrypoint.sh
 
 VOLUME /etc/letsencrypt/live
 VOLUME /var/lib/registry
-VOLUME /auth/htpasswd
+VOLUME /auth
 VOLUME /home
 
 ENV JELASTIC_EXPOSE="DISABLED"
