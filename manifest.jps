@@ -64,9 +64,9 @@ nodes:
     extip: ${settings.isPublicIPEnabled}
     addons: ["update-registry-certificate-addon"]
     env:
-      ENV REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
-      ENV REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
-      ENV REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+      REGISTRY_AUTH: htpasswd
       REGISTRY_HTTP_SECRET: ${globals.registryPassword}
       #################################################
       REGISTRY_HTTP_TLS_CERTIFICATE: /home/fullchain.pem
