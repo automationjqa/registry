@@ -41,11 +41,27 @@ settings:
       values:
         true: Public IP.
         false: Endpoint.
+
+addons:
+  - id: update-registry-certificate-addon
+    type: update
+    name: Docker Registry Configuration
+    baseUrl: https://raw.githubusercontent.com/mrAlexZT/registry/master/
+    description: Docker Registry Configuration Add-on
+    logo: images/docker-logo.png
+    buttons:
+    - confirmText: Do you want to re-install attached SSL certificate(s)?
+      loadingText: Re-installing attached SSL certificate(s)...
+      action: install_certificate
+      caption: Re-install attached SSL certificate(s)
+      successText: success.md
+
 nodes:
   - nodeGroup: cp
     image: jelos/registry:centos7
     cloudlets: 10
     extip: ${settings.isPublicIPEnabled}
+    addons: ["update-registry-certificate-addon"]
     env:
       ENV REGISTRY_AUTH_HTPASSWD_PATH: /auth/htpasswd
       ENV REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
@@ -97,7 +113,8 @@ actions:
     - cmd [cp]: |-
         /usr/bin/echo install_cert_le > /home/CertTypeToInstall
         /usr/bin/certbot certonly --standalone ${globals.LetsEncryptTestParams} --domain ${globals.registryURL} --preferred-challenges http-01 --http-01-port 80 --renew-by-default --email ${user.email} --agree-tos --no-bootstrap --no-self-upgrade --no-eff-email --logs-dir /var/log/letsencrypt
-        cp /etc/letsencrypt/live/${globals.registryURL}/*.pem /home/
+        ln -s /etc/letsencrypt/live/${globals.registryURL}/fullchain.pem /home/fullchain.pem
+        ln -s /etc/letsencrypt/live/${globals.registryURL}/privkey.pem /home/privkey.pem
 
   install_cert_ss:
     - log: Install ${settings.CertTypeToInstall}
