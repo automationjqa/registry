@@ -41,7 +41,6 @@ settings:
       values:
         true: Public IP.
         false: Endpoint.
-
 nodes:
   - nodeGroup: cp
     image: jelos/registry:centos7
@@ -60,8 +59,7 @@ nodes:
 onInstall:
   - prepare_registry
   - if ("${settings.isPublicIPEnabled}" == "false"): addendpoint        
-  - if ('${settings.CertTypeToInstall}' == 'install_cert_le'): install_cert_le
-  - if ('${settings.CertTypeToInstall}' == 'install_cert_ss'): install_cert_ss
+  - install_certificate
   - start_registry
 
 actions:
@@ -86,6 +84,10 @@ actions:
     - log: publicPort = ${response.object.publicPort}
     - setGlobals:
         registryPort: ${response.object.publicPort}
+
+  install_certificate:
+    - if ('${settings.CertTypeToInstall}' == 'install_cert_le'): install_cert_le
+    - if ('${settings.CertTypeToInstall}' == 'install_cert_ss'): install_cert_ss
 
   install_cert_le:
     - log: Install ${settings.CertTypeToInstall}
