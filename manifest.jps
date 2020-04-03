@@ -15,7 +15,7 @@ globals:
   registryUser: jelastic
   registryPassword: ${fn.password}
   LetsEncryptTestParams: ""
-  LetsEncryptUpdateTime: ${fn.random(0,59)} ${fn.random(0,23)} * * *
+  LetsEncryptUpdateTime: ${fn.random(1,59)} ${fn.random(1,23)} * * *
 
 settings:
   fields:
