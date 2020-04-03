@@ -6,7 +6,7 @@ categories:
 - apps/dev-and-admin-tools
 
 description:
-  text: Your own private docker registry secured by LetsEncrypt and password authentication.
+  text: text/description.md
   short: Your own private docker registry.
 
 globals:
@@ -125,4 +125,4 @@ actions:
         -keyout /home/privkey.pem \
         -subj "/C=UA/ST=Zhytomyr/L=ZT/O=Jelastic/OU=Quality Assurance Department/emailAddress=${user.email}/CN=${globals.registryURL}"
 
-success: success.md
+success: text/success.md
