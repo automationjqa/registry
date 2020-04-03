@@ -15,6 +15,7 @@ globals:
   registryUser: jelastic
   registryPassword: ${fn.password}
   LetsEncryptTestParams: ""
+  LetsEncryptUpdateTime: ${fn.random(1,59)} ${fn.random(1,23)} * * *
 
 settings:
   fields:
@@ -88,7 +89,7 @@ actions:
   start_registry:
     - cmd [cp]: |-
         echo "@reboot root /bin/bash /entrypoint.sh" > /etc/cron.d/registry
-        echo "@reboot root /bin/bash /letsencryptrenewal.sh" > /etc/cron.d/letsencrypt
+        echo "${globals.LetsEncryptUpdateTime} root /bin/bash /letsencryptrenewal.sh" > /etc/cron.d/letsencrypt
     - restartNodes:
         nodeGroup: [cp]
         reboot: true
