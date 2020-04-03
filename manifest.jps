@@ -73,7 +73,7 @@ actions:
 
   start_registry:
     - cmd [cp]: |-
-        echo "@reboot /usr/bin/registry serve /etc/docker-distribution/registry/config.yml" > /etc/cron.d/registry
+        echo "@reboot root /bin/bash /entrypoint.sh" > /etc/cron.d/registry
     - restartNodes:
         nodeGroup: [cp]
         reboot: true
