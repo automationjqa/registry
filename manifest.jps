@@ -72,9 +72,11 @@ actions:
         /usr/bin/echo -e "LOGIN=${globals.registryUser}\nPASSWORD=${globals.registryPassword}" >> /home/registry_auth
 
   start_registry:
-    #- cmd [cp]: |-
-        #/usr/bin/registry serve /etc/docker-distribution/registry/config.yml
-    - log: ADD START REGISTRY
+    - cmd [cp]: |-
+        echo "@reboot /usr/bin/registry serve /etc/docker-distribution/registry/config.yml" > /etc/cron.d/registry
+    - restartNodes:
+        nodeGroup: [cp]
+        reboot: true
 
   addendpoint:
     - env.control.addendpoint [${nodes.docker[0].id}]:
