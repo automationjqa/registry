@@ -40,8 +40,8 @@ settings:
       name: isPublicIPEnabled
       default: "false"
       values:
-        true: Public IP.
-        false: Endpoint.
+        true: Public IPv4
+        false: Endpoint via the Shared Load Balancer
 
 addons:
   - id: update-registry-certificate-addon
