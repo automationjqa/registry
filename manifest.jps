@@ -1,7 +1,7 @@
 type: install
 name: Docker Registry
 baseUrl: https://raw.githubusercontent.com/mrAlexZT/registry/master/
-logo: https://www.docker.com/sites/default/files/d8/2019-07/horizontal-logo-monochromatic-white.png
+logo: images/docker-logo.png
 categories:
 - apps/dev-and-admin-tools
 
