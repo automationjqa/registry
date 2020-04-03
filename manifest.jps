@@ -89,7 +89,6 @@ actions:
   start_registry:
     - cmd [cp]: |-
         echo "@reboot root /bin/bash /entrypoint.sh" > /etc/cron.d/registry
-        echo "${globals.LetsEncryptUpdateTime} root /bin/bash /letsencryptrenewal.sh" > /etc/cron.d/letsencrypt
     - restartNodes:
         nodeGroup: [cp]
         reboot: true
@@ -117,6 +116,7 @@ actions:
         /usr/bin/certbot certonly --standalone ${globals.LetsEncryptTestParams} --domain ${globals.registryURL} --preferred-challenges http-01 --http-01-port 80 --renew-by-default --email ${user.email} --agree-tos --no-bootstrap --no-self-upgrade --no-eff-email --logs-dir /var/log/letsencrypt
         ln -s /etc/letsencrypt/live/${globals.registryURL}/fullchain.pem /home/fullchain.pem
         ln -s /etc/letsencrypt/live/${globals.registryURL}/privkey.pem /home/privkey.pem
+        echo "${globals.LetsEncryptUpdateTime} root /bin/bash /letsencryptrenewal.sh" > /etc/cron.d/letsencrypt
 
   install_cert_ss:
     - log: Install ${settings.CertTypeToInstall}
