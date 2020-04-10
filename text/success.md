@@ -7,7 +7,7 @@ docker login ${globals.registryURL}:${globals.registryPort} -u jelastic -p ${glo
 ```/home/registry_auth```
 
 ##### LetsEncrypt installation/update log:
-```/var/log/cert.log```
+```/var/log/letsencrypt/letsencrypt.log```
 
 ##### Tag image:
 ~~~~
