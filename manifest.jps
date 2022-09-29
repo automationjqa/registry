@@ -133,10 +133,14 @@ actions:
 
   install_additional_software:
     - cmd [cp]: |-
-        yum install -y git docker htop
+        yum install -y htop git
 
   configure_docker:
     - cmd [cp]: |-
+        yum remove -y docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine
+        yum install -y yum-utils
+        yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+        yum install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
         systemctl enable docker
         service docker start
         docker login ${globals.registryURL}:5000 -u ${globals.registryUser} -p ${globals.registryPassword}
