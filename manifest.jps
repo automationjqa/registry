@@ -133,7 +133,7 @@ actions:
 
   install_additional_software:
     - cmd [cp]: |-
-        yum install -y docker htop
+        yum install -y git docker htop
 
   configure_docker:
     - cmd [cp]: |-
