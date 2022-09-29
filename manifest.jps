@@ -12,7 +12,7 @@ description:
 globals:
   registryURL: ${env.domain}
   registryPort: 5000
-  registryUser: jelastic
+  registryUser: superadmin
   registryPassword: ${fn.password}
   LetsEncryptTestParams: ""
   LetsEncryptUpdateTime: ${fn.random(1,59)} ${fn.random(1,23)} * * *
@@ -47,6 +47,7 @@ addons:
   - id: update-registry-certificate-addon
     type: update
     name: Docker Registry Configuration
+    permanent: true
     baseUrl: https://raw.githubusercontent.com/mrAlexZT/registry/master/
     description: Docker Registry Configuration Add-on
     logo: images/docker-logo.png
@@ -78,6 +79,9 @@ onInstall:
   - if ("${settings.isPublicIPEnabled}" == "false"): addendpoint        
   - install_certificate
   - start_registry
+  - install_additional_software
+  - configure_docker
+  - set_env_variables
 
 actions:
   prepare_registry:
@@ -125,6 +129,22 @@ actions:
         /usr/bin/openssl req -new -x509 -days 3065 -nodes \
         -out /home/fullchain.pem \
         -keyout /home/privkey.pem \
-        -subj "/C=UA/ST=Zhytomyr/L=ZT/O=Jelastic/OU=Quality Assurance Department/emailAddress=${user.email}/CN=${globals.registryURL}"
+        -subj "/C=UA/ST=Zhytomyr/L=ZT/O=${globals.registryUser}/OU=Quality Assurance Department/emailAddress=${user.email}/CN=${globals.registryURL}"
+
+  install_additional_software:
+    - cmd [cp]: |-
+        yum install -y docker htop
+
+  configure_docker:
+    - cmd [cp]: |-
+        systemctl enable docker
+        service docker start
+        docker login ${globals.registryURL}:5000 -u ${globals.registryUser} -p ${globals.registryPassword}
+
+  set_env_variables:
+    - log: Set env vars
+    - env.control.SetContainerEnvVarsByGroup:
+        nodeGroup: cp
+        data: '{ "registryURL": "${globals.registryURL}", "registryPort": "${globals.registryPort}", "registryUser": "${globals.registryUser}", "registryPassword": "${globals.registryPassword}"}'
 
 success: text/success.md
