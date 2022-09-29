@@ -1,6 +1,6 @@
 ##### Login to a registry:
 ~~~~
-docker login ${globals.registryURL}:${globals.registryPort} -u jelastic -p ${globals.registryPassword}
+docker login ${globals.registryURL}:${globals.registryPort} -u ${globals.registryUser} -p ${globals.registryPassword}
 ~~~~
   
 ##### Credentials are stored in the registry container:
@@ -11,10 +11,10 @@ docker login ${globals.registryURL}:${globals.registryPort} -u jelastic -p ${glo
 
 ##### Tag image:
 ~~~~
-docker tag <image> ${globals.registryURL}:${globals.registryPort}/jelastic/<image>:<tag>
+docker tag <image> ${globals.registryURL}:${globals.registryPort}/${globals.registryUser}/<image>:<tag>
 ~~~~
 
 ##### Push image:
 ~~~~
-docker push ${globals.registryURL}:${globals.registryPort}/jelastic/<image>:<tag>
+docker push ${globals.registryURL}:${globals.registryPort}/${globals.registryUser}/<image>:<tag>
 ~~~~
