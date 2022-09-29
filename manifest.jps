@@ -61,7 +61,7 @@ addons:
 nodes:
   - nodeGroup: cp
     image: jelos/registry:centos7
-    cloudlets: 10
+    cloudlets: 16
     extip: ${settings.isPublicIPEnabled}
     addons: ["update-registry-certificate-addon"]
     env:
